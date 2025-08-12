@@ -9,4 +9,4 @@ jobs:
     steps:
       - name: Call scrape
         run: |
-          curl -sS https://directory.highlist.co/api/scrape || exit 1
+          curl -sS https://YOURPROJECT.vercel.app/api/scrape || exit 1
