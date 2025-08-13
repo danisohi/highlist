@@ -1,6 +1,20 @@
 // api/scrape.js (CommonJS)
 const cheerio = require('cheerio');
-
+if (req.query && req.query.debug === 'env') {
+  return res.status(200).json({
+    MONDAY_API_KEY_present: !!process.env.MONDAY_API_KEY,
+    MONDAY_BOARD_ID: process.env.MONDAY_BOARD_ID || null,
+    MONDAY_GROUP_ID: process.env.MONDAY_GROUP_ID || null,
+    MONDAY_COLUMN_MAP_parsed: (() => {
+      try {
+        const parsed = JSON.parse(process.env.MONDAY_COLUMN_MAP || "{}");
+        return Object.keys(parsed);
+      } catch {
+        return "INVALID_JSON";
+      }
+    })()
+  });
+}
 // 1) Start with a small, clean source list. Add more after it works.
 const sources = [
   // BB's Tex-Orleans locations
