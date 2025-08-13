@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 
 const sources = [
   // Add real URLs here
-  { url: 'https://examplebar.com/menu', type: 'menu', venue: 'Example Bar', city: 'Austin', state: 'TX' }
+  { url: 'https://bbstexorleans.com/katy-menu/voodoo-bar/', type: 'menu', venue: 'Katy Voodoo Bar', city: 'San Antonio', state: 'TX' }
 ];
 
 async function fetchText(url) {
