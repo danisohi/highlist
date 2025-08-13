@@ -1,24 +1,25 @@
-// api/scrape.js
+// api/scrape.js (CommonJS)
 const cheerio = require('cheerio');
 
-// Simple source list (you can add more after it works)
+// Sources (small set to keep it quick)
 const sources = [
   { url: 'https://bbstexorleans.com/montrose-menu/', type: 'menu', venue: "BB's Tex-Orleans - Montrose", city: 'Houston', state: 'TX' },
   { url: 'https://bbstexorleans.com/katy-menu/voodoo-bar/', type: 'menu', venue: "BB's Tex-Orleans - Katy (Voodoo Bar)", city: 'Katy', state: 'TX' },
   { url: 'https://bbstexorleans.com/our-menu/', type: 'menu', venue: "BB's Tex-Orleans - Briargrove", city: 'Houston', state: 'TX' }
 ];
 
-// Safe Monday setup (won’t crash if envs are missing or bad)
+// Monday envs
 const MONDAY_TOKEN = process.env.MONDAY_API_KEY;
 const MONDAY_BOARD_ID = Number(process.env.MONDAY_BOARD_ID || 0);
-const MONDAY_GROUP_ID = process.env.MONDAY_GROUP_ID || "topics";
+const MONDAY_GROUP_ID = process.env.MONDAY_GROUP_ID || 'topics';
+
+// Safe parse with a fallback map so writes still work even if the env var is empty
 const COLS = (() => {
   try {
     if (process.env.MONDAY_COLUMN_MAP) {
       return JSON.parse(process.env.MONDAY_COLUMN_MAP);
     }
   } catch {}
-  // Fallback so writes still work even if env var is empty
   return {
     "url": "link_mkts5msg",
     "venue": "text_mktsb05",
@@ -34,19 +35,12 @@ const COLS = (() => {
     "notes": "long_text_mktscrj2"
   };
 })();
-const COLS = (() => {
-  try {
-    return JSON.parse(process.env.MONDAY_COLUMN_MAP || "{}");
-  } catch {
-    return {};
-  }
-})();
 
 async function mondayGraphQL(query, variables) {
   if (!MONDAY_TOKEN || !MONDAY_BOARD_ID || !Object.keys(COLS).length) return null;
-  const resp = await fetch("https://api.monday.com/v2", {
-    method: "POST",
-    headers: { "Authorization": MONDAY_TOKEN, "Content-Type": "application/json" },
+  const resp = await fetch('https://api.monday.com/v2', {
+    method: 'POST',
+    headers: { 'Authorization': MONDAY_TOKEN, 'Content-Type': 'application/json' },
     body: JSON.stringify({ query, variables })
   });
   const data = await resp.json();
@@ -57,16 +51,16 @@ async function mondayGraphQL(query, variables) {
 function buildColumnValues(result) {
   const vals = {};
   if (COLS.url) vals[COLS.url] = { url: result.finalUrl || result.url, text: result.venue || result.url };
-  if (COLS.venue) vals[COLS.venue] = result.venue || "";
-  if (COLS.city) vals[COLS.city] = result.city || "";
-  if (COLS.state) vals[COLS.state] = result.state || "";
-  if (COLS.status_code) vals[COLS.status_code] = String(result.status || "");
-  if (COLS.final_url) vals[COLS.final_url] = result.finalUrl || "";
-  if (COLS.mentions_thc) vals[COLS.mentions_thc] = result.mentionsTHC ? "true" : "false";
-  if (COLS.has_brands) vals[COLS.has_brands] = result.hasBrands ? "true" : "false";
-  if (COLS.brands) vals[COLS.brands] = (result.brands || []).join(", ");
-  if (COLS.last_checked) vals[COLS.last_checked] = { date: new Date().toISOString().slice(0,10) };
-  if (COLS.source_type) vals[COLS.source_type] = { labels: [result.type || "menu"] };
+  if (COLS.venue) vals[COLS.venue] = result.venue || '';
+  if (COLS.city) vals[COLS.city] = result.city || '';
+  if (COLS.state) vals[COLS.state] = result.state || '';
+  if (COLS.status_code) vals[COLS.status_code] = String(result.status || '');
+  if (COLS.final_url) vals[COLS.final_url] = result.finalUrl || '';
+  if (COLS.mentions_thc) vals[COLS.mentions_thc] = result.mentionsTHC ? 'true' : 'false';
+  if (COLS.has_brands) vals[COLS.has_brands] = result.hasBrands ? 'true' : 'false';
+  if (COLS.brands) vals[COLS.brands] = (result.brands || []).join(', ');
+  if (COLS.last_checked) vals[COLS.last_checked] = { date: new Date().toISOString().slice(0, 10) };
+  if (COLS.source_type) vals[COLS.source_type] = { labels: [result.type || 'menu'] };
   return vals;
 }
 
@@ -116,20 +110,19 @@ async function fetchText(url) {
       'User-Agent': 'Mozilla/5.0 (compatible; HighlistBot/1.0; +https://directory.highlist.co)',
       'Accept-Language': 'en-US,en;q=0.9'
     },
+    redirect: 'follow',
+    cache: 'no-store'
   });
   const html = await resp.text();
   return { status: resp.status, html, finalUrl: resp.url };
 }
 
 module.exports = async (req, res) => {
-  // Debug: see envs without exposing secrets
+  // Debug: show envs presence and parse result
   if (req.query && req.query.debug === 'env') {
     let parsedKeys;
-    try {
-      parsedKeys = Object.keys(JSON.parse(process.env.MONDAY_COLUMN_MAP || "{}"));
-    } catch {
-      parsedKeys = "INVALID_JSON";
-    }
+    try { parsedKeys = Object.keys(JSON.parse(process.env.MONDAY_COLUMN_MAP || '{}')); }
+    catch { parsedKeys = 'INVALID_JSON'; }
     return res.status(200).json({
       MONDAY_API_KEY_present: !!process.env.MONDAY_API_KEY,
       MONDAY_BOARD_ID: process.env.MONDAY_BOARD_ID || null,
@@ -138,7 +131,17 @@ module.exports = async (req, res) => {
     });
   }
 
-  // Debug: run scraper but skip Monday completely
+  // Debug: show raw value characteristics
+  if (req.query && req.query.debug === 'rawmap') {
+    const raw = process.env.MONDAY_COLUMN_MAP || '';
+    return res.status(200).json({
+      length: raw.length,
+      startsWith: raw.slice(0, 30),
+      endsWith: raw.slice(-30)
+    });
+  }
+
+  // Debug: skip Monday writes
   const skipMonday = req.query && req.query.debug === 'plain';
 
   try {
@@ -159,18 +162,20 @@ module.exports = async (req, res) => {
         results.push(result);
 
         if (!skipMonday) {
-          try {
-            await upsertMondayItem(result);
-          } catch {
-            // do not crash the whole function
-          }
+          try { await upsertMondayItem(result); }
+          catch { /* swallow write errors, don’t crash */ }
         }
       } catch (e) {
         results.push({ ...src, error: String(e) });
       }
     }
 
-    res.status(200).json({ ok: true, scanned: results.length, results, monday_writes: skipMonday ? "skipped (debug=plain)" : "attempted" });
+    res.status(200).json({
+      ok: true,
+      scanned: results.length,
+      results,
+      monday_writes: skipMonday ? 'skipped (debug=plain)' : 'attempted'
+    });
   } catch (e) {
     res.status(500).json({ ok: false, error: String(e) });
   }
