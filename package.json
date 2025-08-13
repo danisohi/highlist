@@ -5,8 +5,5 @@
 "engines": { "node": "20.x" },
 "dependencies": {
 "cheerio": "^1.0.0-rc.12"
-},
-"scripts": {
-"build": "echo "no build step""
 }
 }
