@@ -2,7 +2,22 @@
 const cheerio = require('cheerio');
 
 const sources = [
-  // Add real URLs here
+  //const sources = [
+// BB's Tex-Orleans locations
+{ url: 'https://bbstexorleans.com/montrose-menu/', type: 'menu', venue: "BB's Tex-Orleans - Montrose", city: 'Houston', state: 'TX' },
+{ url: 'https://bbstexorleans.com/katy-menu/voodoo-bar/', type: 'menu', venue: "BB's Tex-Orleans - Katy (Voodoo Bar)", city: 'Katy', state: 'TX' },
+{ url: 'https://bbstexorleans.com/our-menu/', type: 'menu', venue: "BB's Tex-Orleans - Briargrove", city: 'Houston', state: 'TX' },
+{ url: 'https://bbstexorleans.com/our-menu/', type: 'menu', venue: "BB's Tex-Orleans - Cypress", city: 'Cypress', state: 'TX' },
+{ url: 'https://bbstexorleans.com/our-menu/', type: 'menu', venue: "BB's Tex-Orleans - Energy Corridor", city: 'Houston', state: 'TX' },
+{ url: 'https://bbstexorleans.com/our-menu/', type: 'menu', venue: "BB's Tex-Orleans - Heights", city: 'Houston', state: 'TX' },
+{ url: 'https://bbstexorleans.com/our-menu/', type: 'menu', venue: "BB's Tex-Orleans - Upper Kirby", city: 'Houston', state: 'TX' },
+{ url: 'https://bbstexorleans.com/our-menu/', type: 'menu', venue: "BB's Tex-Orleans - Pearland", city: 'Pearland', state: 'TX' },
+{ url: 'https://bbstexorleans.com/our-menu/', type: 'menu', venue: "BB's Tex-Orleans - Oak Forest", city: 'Houston', state: 'TX' },
+{ url: 'https://bbstexorleans.com/our-menu/', type: 'menu', venue: "BB's Tex-Orleans - Kingwood", city: 'Kingwood', state: 'TX' },
+{ url: 'https://bbstexorleans.com/our-menu/', type: 'menu', venue: "BB's Tex-Orleans - Tomball", city: 'Houston', state: 'TX' },
+{ url: 'https://bbstexorleans.com/our-menu/', type: 'menu', venue: "BB's Tex-Orleans - Webster", city: 'Webster', state: 'TX' },
+{ url: 'https://bbstexorleans.com/our-menu/', type: 'menu', venue: "BB's Tex-Orleans - San Antonio (Alamo Ranch)", city: 'San Antonio', state: 'TX' },
+]; Add real URLs here
   { url: 'https://bbstexorleans.com/katy-menu/voodoo-bar/', type: 'menu', venue: 'Katy Voodoo Bar', city: 'San Antonio', state: 'TX' }
 ];
 
