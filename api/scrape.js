@@ -14,6 +14,28 @@ const MONDAY_BOARD_ID = Number(process.env.MONDAY_BOARD_ID || 0);
 const MONDAY_GROUP_ID = process.env.MONDAY_GROUP_ID || "topics";
 const COLS = (() => {
   try {
+    if (process.env.MONDAY_COLUMN_MAP) {
+      return JSON.parse(process.env.MONDAY_COLUMN_MAP);
+    }
+  } catch {}
+  // Fallback so writes still work even if env var is empty
+  return {
+    "url": "link_mkts5msg",
+    "venue": "text_mktsb05",
+    "city": "text_mktstd82",
+    "state": "text_mktsn9zg",
+    "status_code": "numeric_mktskzfv",
+    "final_url": "text_mktsyfbt",
+    "mentions_thc": "boolean_mktsyayt",
+    "has_brands": "boolean_mktsj8x4",
+    "brands": "text_mktshjme",
+    "last_checked": "date_mktsmqn1",
+    "source_type": "dropdown_mktskasy",
+    "notes": "long_text_mktscrj2"
+  };
+})();
+const COLS = (() => {
+  try {
     return JSON.parse(process.env.MONDAY_COLUMN_MAP || "{}");
   } catch {
     return {};
