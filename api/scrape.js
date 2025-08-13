@@ -1,6 +1,17 @@
 // api/scrape.js (CommonJS)
 const cheerio = require('cheerio');
-
+const columnValues = {};
+if (COLS.url) columnValues[COLS.url] = { url: result.finalUrl || result.url, text: result.venue || result.url };
+if (COLS.venue) columnValues[COLS.venue] = result.venue || "";
+if (COLS.city) columnValues[COLS.city] = result.city || "";
+if (COLS.state) columnValues[COLS.state] = result.state || "";
+if (COLS.status_code) columnValues[COLS.status_code] = String(result.status || "");
+if (COLS.final_url) columnValues[COLS.final_url] = result.finalUrl || "";
+if (COLS.mentions_thc) columnValues[COLS.mentions_thc] = result.mentionsTHC ? "true" : "false";
+if (COLS.has_brands) columnValues[COLS.has_brands] = result.hasBrands ? "true" : "false";
+if (COLS.brands) columnValues[COLS.brands] = (result.brands || []).join(", ");
+if (COLS.last_checked) columnValues[COLS.last_checked] = { date: new Date().toISOString().slice(0,10) };
+if (COLS.source_type) columnValues[COLS.source_type] = { labels: [result.type || "menu"] };
 const sources = [
   //const sources = [
 // BB's Tex-Orleans locations
