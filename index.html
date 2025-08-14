@@ -1,6 +1,14 @@
 <!doctype html>
-import { Analytics } from '@vercel/analytics/next';
- 
+ .btn-venues {
+  display:inline-block;
+  background:#0a66c2;
+  color:#fff;
+  padding:8px 10px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:600;
+}
+.topbar { gap:10px; }
 export default function RootLayout({
   children,
 }: {
@@ -63,11 +71,11 @@ export default function RootLayout({
 </head>
 <body>
   <div id="map"></div>
-
-  <div class="topbar">
-    <h1>HIGHLIST — Find THC Drinks</h1>
-    <button class="findme" id="findMe">Find near me</button>
-  </div>
+<div class="topbar">
+  <h1>HIGHLIST — Find THC Drinks</h1>
+  <button class="findme" id="findMe">Find near me</button>
+  <a href="/venues.html" class="btn-venues">See THC Drink Venues →</a>
+</div>
 <p style="margin: 16px 0;">
   <a href="/venues.html"
      style="display:inline-block;background:#0a66c2;color:white;padding:10px 14px;border-radius:6px;text-decoration:none;font-weight:600;">
