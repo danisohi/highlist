@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>THC Drink Venues</title>
+    <style>
+      body { font-family: system-ui, Arial, sans-serif; padding: 24px; max-width: 800px; margin: 0 auto; }
+      .card { border: 1px solid #eee; padding: 12px; margin: 12px 0; border-radius: 8px; }
+      .muted { color: #666; font-size: 14px; }
+      a { color: #0a66c2; text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <h1>THC Drink Venues</h1>
+    <div id="status" class="muted">Loading…</div>
+    <div id="list"></div>
+
+    <script>
+      async function load() {
+        const status = document.getElementById('status');
+        const list = document.getElementById('list');
+        try {
+          const resp = await fetch('/api/venues', { cache: 'no-store' });
+          const data = await resp.json();
+          if (!data?.items?.length) {
+            status.textContent = 'No venues yet. Check back soon.';
+            return;
+          }
+          status.textContent = '';
+          data.items.forEach(v => {
+            const div = document.createElement('div');
+            div.className = 'card';
+            const name = v.venue || v.name || 'Untitled';
+            const place = [v.city, v.state].filter(Boolean).join(', ');
+            const brands = (v.brands || '').trim();
+            div.innerHTML = `
+              <strong>${name}</strong>
+              <div class="muted">${place}</div>
+              ${brands ? `<div>Brands: ${brands}</div>` : ''}
+              ${v.url ? `<div><a href="${v.url}" target="_blank" rel="noreferrer">Menu</a></div>` : ''}
+              ${String(v.mentions_thc).toLowerCase() === 'true' ? `<div style="color:green">Mentions THC</div>` : ''}
+            `;
+            list.appendChild(div);
+          });
+        } catch (e) {
+          status.textContent = 'Failed to load venues.';
+        }
+      }
+      load();
+    </script>
+  </body>
+</html>
